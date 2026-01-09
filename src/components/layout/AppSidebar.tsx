@@ -1,4 +1,4 @@
-import { LayoutDashboard, History, Settings, Bot } from 'lucide-react';
+import { LayoutDashboard, History, Settings, Bot, User } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useLocation } from 'react-router-dom';
 import {
@@ -18,6 +18,7 @@ const navItems = [
   { title: 'Dashboard', url: '/', icon: LayoutDashboard },
   { title: 'History', url: '/history', icon: History },
   { title: 'Settings', url: '/settings', icon: Settings },
+  { title: 'Profile', url: '/profile', icon: User },
 ];
 
 export function AppSidebar() {
