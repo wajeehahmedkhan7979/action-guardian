@@ -1,6 +1,7 @@
 import { ActionFilters, ActionStatus, ActionType } from '@/types/action';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Select,
   SelectContent,
@@ -16,6 +17,10 @@ interface FilterBarProps {
   pendingCount: number;
   approvedCount: number;
   rejectedCount: number;
+  totalVisible: number;
+  selectedCount: number;
+  onSelectAll: () => void;
+  allSelected: boolean;
 }
 
 export function FilterBar({
@@ -24,6 +29,10 @@ export function FilterBar({
   pendingCount,
   approvedCount,
   rejectedCount,
+  totalVisible,
+  selectedCount,
+  onSelectAll,
+  allSelected,
 }: FilterBarProps) {
   const updateFilter = <K extends keyof ActionFilters>(
     key: K,
@@ -73,6 +82,18 @@ export function FilterBar({
 
       {/* Search and Filters Row */}
       <div className="flex items-center gap-3 flex-wrap">
+        {/* Select All */}
+        <div className="flex items-center gap-2 pr-3 border-r">
+          <Checkbox
+            checked={allSelected && totalVisible > 0}
+            onCheckedChange={onSelectAll}
+            aria-label="Select all visible actions"
+          />
+          <span className="text-sm text-muted-foreground">
+            {selectedCount > 0 ? `${selectedCount} selected` : 'Select all'}
+          </span>
+        </div>
+
         {/* Search */}
         <div className="relative flex-1 min-w-[200px] max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
