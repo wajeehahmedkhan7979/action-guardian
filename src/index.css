@@ -132,4 +132,33 @@
     background-color: hsl(var(--muted-foreground) / 0.3);
     border-radius: 3px;
   }
+
+  /* Hover scale animation */
+  .hover-scale {
+    @apply transition-transform duration-200 hover:scale-[1.02];
+  }
+
+  /* Focus ring for accessibility */
+  .focus-ring {
+    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+  }
+
+  /* Dimmed state for non-pending actions */
+  .action-dimmed {
+    @apply opacity-75;
+  }
+
+  /* Story link underline animation */
+  .story-link {
+    @apply relative inline-block;
+  }
+
+  .story-link::after {
+    content: '';
+    @apply absolute w-full scale-x-0 h-0.5 bottom-0 left-0 bg-primary origin-bottom-right transition-transform duration-300;
+  }
+
+  .story-link:hover::after {
+    @apply scale-x-100 origin-bottom-left;
+  }
 }

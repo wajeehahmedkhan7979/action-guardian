@@ -5,14 +5,23 @@ import { FilterBar } from '@/components/dashboard/FilterBar';
 import { ActionList } from '@/components/dashboard/ActionList';
 import { ActionModal } from '@/components/dashboard/ActionModal';
 import { BulkActionToolbar } from '@/components/dashboard/BulkActionToolbar';
+import { useKeyboardNavigation } from '@/hooks/useKeyboardNavigation';
 import { toast } from 'sonner';
 import { AIAction } from '@/types/action';
+import { Keyboard } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 
 export default function Dashboard() {
   const { actions, counts, handleApprove, handleReject, updateActionStatus } = useActions();
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [selectedAction, setSelectedAction] = useState<AIAction | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [focusedIndex, setFocusedIndex] = useState(0);
   const [filters, setFilters] = useState<ActionFilters>({
     status: 'pending',
     actionType: 'all',
@@ -148,13 +157,89 @@ export default function Dashboard() {
     [handleReject]
   );
 
+  // Get current focused action
+  const focusedAction = filteredActions[focusedIndex] || null;
+
+  // Keyboard navigation
+  useKeyboardNavigation({
+    onApprove: () => {
+      if (focusedAction && focusedAction.status === 'pending') {
+        onApprove(focusedAction.id);
+      }
+    },
+    onReject: () => {
+      if (focusedAction && focusedAction.status === 'pending') {
+        onReject(focusedAction.id);
+      }
+    },
+    onOpenDetails: () => {
+      if (focusedAction) {
+        handleViewDetails(focusedAction);
+      }
+    },
+    onNavigateUp: () => {
+      setFocusedIndex((prev) => Math.max(0, prev - 1));
+    },
+    onNavigateDown: () => {
+      setFocusedIndex((prev) => Math.min(filteredActions.length - 1, prev + 1));
+    },
+    onSelectCurrent: () => {
+      if (focusedAction) {
+        handleSelect(focusedAction.id);
+      }
+    },
+    enabled: !isModalOpen,
+  });
+
   return (
     <div className="p-6 space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold text-foreground">Action Review</h1>
-        <p className="text-muted-foreground">
-          Review and approve AI-generated actions
-        </p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold text-foreground">Action Review</h1>
+          <p className="text-muted-foreground">
+            Review and approve AI-generated actions
+          </p>
+        </div>
+
+        {/* Keyboard shortcuts hint */}
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="ghost" size="sm" className="hidden sm:flex gap-2">
+              <Keyboard className="w-4 h-4" />
+              <span className="text-xs">Shortcuts</span>
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent align="end" className="w-64">
+            <div className="space-y-2">
+              <h4 className="font-medium text-sm">Keyboard Shortcuts</h4>
+              <div className="grid gap-1.5 text-xs">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Approve</span>
+                  <kbd className="px-1.5 py-0.5 bg-muted rounded font-mono">A</kbd>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Reject</span>
+                  <kbd className="px-1.5 py-0.5 bg-muted rounded font-mono">R</kbd>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">View Details</span>
+                  <kbd className="px-1.5 py-0.5 bg-muted rounded font-mono">Enter</kbd>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Navigate</span>
+                  <span>
+                    <kbd className="px-1.5 py-0.5 bg-muted rounded font-mono">↑</kbd>
+                    <kbd className="px-1.5 py-0.5 bg-muted rounded font-mono ml-1">↓</kbd>
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Select</span>
+                  <kbd className="px-1.5 py-0.5 bg-muted rounded font-mono">Space</kbd>
+                </div>
+              </div>
+            </div>
+          </PopoverContent>
+        </Popover>
       </div>
 
       <FilterBar
