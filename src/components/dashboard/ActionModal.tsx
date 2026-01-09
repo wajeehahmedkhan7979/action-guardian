@@ -36,14 +36,17 @@ export function ActionModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent 
+        className="sm:max-w-lg animate-scale-in"
+        aria-describedby="action-modal-description"
+      >
         <DialogHeader>
           <div className="flex items-center gap-2 mb-2">
             <ActionTypeBadge type={action.actionType} />
             <StatusBadge status={action.status} />
           </div>
           <DialogTitle className="text-xl">{action.description}</DialogTitle>
-          <DialogDescription>
+          <DialogDescription id="action-modal-description">
             Action ID: {action.id}
           </DialogDescription>
         </DialogHeader>
@@ -134,15 +137,16 @@ export function ActionModal({
 
         {/* Action Buttons */}
         {isPending && (
-          <div className="flex items-center gap-2 pt-4 border-t">
+          <div className="flex items-center gap-2 pt-4 border-t" role="group" aria-label="Action buttons">
             <Button
               onClick={() => {
                 onApprove(action.id);
                 onClose();
               }}
-              className="flex-1 bg-success hover:bg-success/90 text-success-foreground"
+              className="flex-1 bg-success hover:bg-success/90 text-success-foreground focus-ring"
+              aria-label="Approve this action"
             >
-              <Check className="w-4 h-4 mr-2" />
+              <Check className="w-4 h-4 mr-2" aria-hidden="true" />
               Approve Action
             </Button>
             <Button
@@ -151,13 +155,20 @@ export function ActionModal({
                 onReject(action.id);
                 onClose();
               }}
-              className="flex-1"
+              className="flex-1 focus-ring"
+              aria-label="Reject this action"
             >
-              <X className="w-4 h-4 mr-2" />
+              <X className="w-4 h-4 mr-2" aria-hidden="true" />
               Reject Action
             </Button>
           </div>
         )}
+
+        {/* Keyboard hint */}
+        <div className="pt-2 text-xs text-muted-foreground text-center" aria-hidden="true">
+          Press <kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px] font-mono">A</kbd> to approve, 
+          <kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px] font-mono ml-1">R</kbd> to reject
+        </div>
       </DialogContent>
     </Dialog>
   );
